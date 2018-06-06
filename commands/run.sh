@@ -86,13 +86,13 @@ run_params+=("run" "--name" "$container_name")
 
 # append env vars provided in ENV or ENVIRONMENT, these are newline delimited
 while IFS=$'\n' read -r env ; do
-  [[ -n "${env:-}" ]] && run_params+=("-e" "${env}")
+  [[ -n "${env:-}" ]] && run_params+=("-e" "$(echo $env | sed -e 's;\\\$;$;g')")
 done <<< "$(printf '%s\n%s' \
   "$(plugin_read_list ENV)" \
   "$(plugin_read_list ENVIRONMENT)")"
 
 while IFS=$'\n' read -r vol ; do
-  [[ -n "${vol:-}" ]] && run_params+=("-v" "${vol}")
+  [[ -n "${vol:-}" ]] && run_params+=("-v" "$(echo $vol | sed -e 's;\\\$;$;g')")
 done <<< "$(plugin_read_list VOLUMES)"
 
 # Optionally disable allocating a TTY
